@@ -74,6 +74,7 @@ class QueryBuilder(object):
     def values(self, *vals):
 
         formatted_vals = ("'{0}'".format(str(val)) if isinstance(val, str) else str(val) for val in vals)
+        
         self.VALUES += ' ({0}) '.format(',  '.join(val for val in formatted_vals))
 
         return self

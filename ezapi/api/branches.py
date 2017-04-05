@@ -28,7 +28,7 @@ from asyncpg.exceptions import UniqueViolationError
 
 @api.route('/branches', methods=['GET'])
 async def get_branches(request):
-    print(Branch)
+    
     async with request.app.pool.acquire() as connection:
         records = await connection.fetch('SELECT * from branches')
         
