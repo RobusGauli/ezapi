@@ -26,7 +26,9 @@ class QueryBuilder(object):
     def __init__(self):
         self.SELECT  = 'SELECT '
         self.FROM = 'FROM '
-        self.WHERE = 'WHERE '
+        self.WHERE = ''
+        self.INSERT = 'INSERT INTO '
+        self.VALUES = 'VALUES'
         self.select_query = False
         self.update_query = False
         self.insert_query = False
@@ -48,7 +50,7 @@ class QueryBuilder(object):
     
     def where(self, col, val):
         val = "'{0}'".format(val) if isinstance(val, str) else str(val)
-        self.WHERE += (col.get_string() + ' = ' + val)
+        self.WHERE += ('WHERE '+ col.get_string() + ' = ' + val)
         return self
     
     def _and(self, col, val):
@@ -58,8 +60,31 @@ class QueryBuilder(object):
     
     def _get_select_query(self):
         return self.SELECT + ' ' + self.FROM + ' '+ self.WHERE
+    
+    def insert(self, table, *cols):
+        if self.select_query or self.insert_query:
+            raise BadQuery('Bad Query Chaining')
+        self.INSERT += table.__tablename__
+        self.INSERT += ' ({0})'.format(', '.join(str(col) for col in cols))
+        self.insert_query = True
+        return self
+
+    
+    
+    def values(self, *vals):
+
+        formatted_vals = ("'{0}'".format(str(val)) if isinstance(val, str) else str(val) for val in vals)
+        self.VALUES += ' ({0}) '.format(',  '.join(val for val in formatted_vals))
+
+        return self
+         
+    
+    def _get_insert_query(self):
+        return self.INSERT + ' ' + self.VALUES
 
     def __call__(self):
         if self.select_query:
             return self._get_select_query()
+        elif self.insert_query:
+            return self._get_insert_query()
     

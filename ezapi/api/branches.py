@@ -67,7 +67,12 @@ async def get_branch(request, id):
                      status : 'pass
                  }
     '''
-    print(request.args)
+    
+    ##this must be implemented using the CC
+    
+    if 'action' in request.args and request.args['action'][0] == 'verify':
+        return json({'status': 'need to implement'})
+    
     async with request.app.pool.acquire() as connection:
         try:
             record = await connection.fetchrow(''' SELECT id, name, branch_code, created_at, updated_at, verified, address, remarks
@@ -109,6 +114,8 @@ async def update_branch(request, id):
                 return record_updated_envelop(request.json)
             else:
                 return record_not_updated_env()
+
+
 
 
 
