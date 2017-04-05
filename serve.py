@@ -3,6 +3,7 @@ import asyncio
 
 from ezapi.app_config import create_app
 from asyncpg import connect, create_pool
+from sanic_cors import CORS, cross_origin
 
 DB_CONFIG = {
     'host' : 'localhost',
@@ -13,6 +14,7 @@ DB_CONFIG = {
 
 }
 app = create_app()
+CORS(app)
 
 @app.listener('before_server_start')
 async def resgister_db(app, loop):
