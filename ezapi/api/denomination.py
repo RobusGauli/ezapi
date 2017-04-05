@@ -39,9 +39,9 @@ async def get_denominations(request):
 async def create_denomination(request):
     if not 'denomination_unit' in request.json:
         return fatal_error_envelop()
-    if not len(request.json['denomination_unit']) > 1:
+    if not len(request.json['denomination_unit'].strip()) > 1:
         return fatal_error_envelop()
-        
+
     try:
         denom_unit = request.json['denomination_unit'].strip()
     except Exception:
