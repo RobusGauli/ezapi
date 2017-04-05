@@ -1,6 +1,6 @@
 __author__ = 'robusgauli@gmail.com'
 
-from pqb.exceptions import BadQueryException
+from ezapi.pqb.exceptions import BadQueryException
 
 
 class Column(object):

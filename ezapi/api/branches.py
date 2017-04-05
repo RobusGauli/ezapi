@@ -1,7 +1,9 @@
+import os
+import sys
+
 from sanic.response import json
 from ezapi.api import api
 from asyncpg import connect
-
 from ezapi.envelop.response_envelop import (
     records_json_envelop,
     record_exists_envelop,
@@ -9,22 +11,24 @@ from ezapi.envelop.response_envelop import (
     record_created_envelop,
     record_notfound_envelop,
     record_updated_envelop,
-    record_not_updated_env
+    record_not_updated_env,
+    fatal_error_envelop
 )
 
-
-
+from ezapi.models import (
+    Branch,
+    Denomination, 
+    Deposit,
+    Role, 
+    Teller
+)
 #exceptiohns
 from asyncpg.exceptions import UniqueViolationError
-
-def jsonify(records):
-    gen_exp = (dict(record) for record in records)
-    return gen_exp
-
 
 
 @api.route('/branches', methods=['GET'])
 async def get_branches(request):
+    print(Branch)
     async with request.app.pool.acquire() as connection:
         records = await connection.fetch('SELECT * from branches')
         
@@ -86,19 +90,19 @@ async def update_branch(request, id):
         
         #generate the substring of the query 
         sub_string = ', '.join("{} = '{}'".format(key, val) for key, val in request.json.items())
-        print(sub_string)
+        
         
         query_string = '''Update branches SET {} , updated_at = Now() WHERE id= ($1)'''.format(sub_string)
-        print(query_string)
+        
         #now update the datbase as well as the set the verificatiion to false
         try:
             status = await connection.execute(query_string, id, timeout=10.0)
-            print(status)
+            
         except UniqueViolationError as ue:
             return record_exists_envelop()
             
         except Exception as e:
-            print(e)
+            return fatal_error_envelop()
 
         else:
             if status:

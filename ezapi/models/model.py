@@ -1,4 +1,4 @@
-from pqb import Column
+from ezapi.pqb import Column
 
 class Branch(object):
     '''A model representing the branches table in db'''
